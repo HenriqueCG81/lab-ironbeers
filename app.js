@@ -17,23 +17,34 @@ app.use(express.static(path.join(__dirname, 'public')));
 // ...
 
 // Add the route handlers here:
-hbs.registerPartials(path.join(__dirname, 'views/partials'));
+hbs.registerPartials(path.join(__dirname, '/views/partials'));
 
 app.get('/', (req, res) => {
   res.render('index');
 });
-app.get('/beers', (req, res) => {
+/*app.get('/beers', (req, res) => {
   punkAPI.getBeers().then(response => {
     console.log(response);
     res.render('beers', { response });
   });
+});*/
+
+app.get('/beers', async (req, res) => {
+  const response = await punkAPI.getBeers();
+  console.log(response);
+  res.render('beers', { response });
 });
 
-app.get('/random-beer', (req, res) => {
-  punkAPI.getRandom().then(response => {
-    console.log(response);
-    res.render('random-beer', { response });
-  });
+app.get('/random-beer', async (req, res) => {
+  const response = await punkAPI.getRandom();
+  console.log(response);
+  res.render('random-beer', { response });
 });
 
+app.get('/individual/:id', async (req, res) => {
+  const response = await punkAPI.getBeer(req.params.id);
+  const beer = response[0];
+  console.log('beer', beer);
+  res.render('partials/beer', beer);
+});
 app.listen(3000, () => console.log('🏃‍ on port 3000'));
